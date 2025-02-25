@@ -89,7 +89,7 @@ const Header = ({ accounts }) => {
 
     return (
         <header className='container'>
-            <div className='search-bar flex items-center justify-between'>
+            <div className='search-bar px-2 py-2 flex items-center justify-between'>
                 <Select
                     value={searchOptions.find(option => option.value === searchType)}
                     onChange={handleSearchTypeChange}
@@ -104,7 +104,7 @@ const Header = ({ accounts }) => {
                     />
                 ) : (
                     <input
-                        className='search-input flex-grow'
+                        className='search-input mx-2 rounded-xl flex-grow'
                         type="text"
                         value={searchQuery}
                         onChange={handleSearchQueryChange}

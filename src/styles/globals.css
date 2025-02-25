@@ -3,17 +3,93 @@
 @tailwind utilities;
 
 :root {
-	--background-color: #f7f8fc;
-	--text-color: #333333;
+    /* Primary Colors */
+    --primary-main: #1E40AF;    /* Blue 800 */
+    --primary-light: #3B82F6;   /* Blue 500 */
+    --primary-dark: #1E3A8A;    /* Blue 900 */
+
+    /* Secondary Colors */
+    --secondary-main: #059669;   /* Emerald 600 */
+    --secondary-light: #10B981;  /* Emerald 500 */
+    --secondary-dark: #047857;   /* Emerald 700 */
+
+    /* Background Colors */
+    --background-default: #F7F8FC;
+    --background-paper: #FFFFFF;
+    --background-secondary: #F3F4F6;
+
+    /* Text Colors */
+    --text-primary: #333333;
+    --text-secondary: #6B7280;
+    --text-disabled: #9CA3AF;
+
+    /* Status Colors */
+    --error: #DC2626;
+    --warning: #D97706;
+    --success: #059669;
+    --info: #3B82F6;
+
+    /* Border & Divider */
+    --divider: #E5E7EB;
 }
+
 .dark {
-	--background-color: #111827;
-	--text-color: #e0e3f0;
+    /* Primary Colors */
+    --primary-main: #3B82F6;    /* Blue 500 */
+    --primary-light: #60A5FA;   /* Blue 400 */
+    --primary-dark: #2563EB;    /* Blue 600 */
+
+    /* Secondary Colors */
+    --secondary-main: #10B981;   /* Emerald 500 */
+    --secondary-light: #34D399;  /* Emerald 400 */
+    --secondary-dark: #059669;   /* Emerald 600 */
+
+    /* Background Colors */
+    --background-default: #111827;
+    --background-paper: #1F2937;
+    --background-secondary: #374151;
+
+    /* Text Colors */
+    --text-primary: #E0E3F0;
+    --text-secondary: #9CA3AF;
+    --text-disabled: #6B7280;
+
+    /* Status Colors */
+    --error: #EF4444;
+    --warning: #F59E0B;
+    --success: #10B981;
+    --info: #60A5FA;
+
+    /* Border & Divider */
+    --divider: #374151;
 }
+
 body {
-	margin: 0;
-	padding: 0;
-	background-color: var(--background-color);
-	color: var(--text-color);
-	transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    padding: 1rem;
+    background-color: var(--background-default);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-[var(--primary-main)] text-white px-4 py-2 rounded-lg 
+               hover:bg-[var(--primary-light)] transition-colors;
+    }
+
+    .btn-secondary {
+        @apply bg-[var(--secondary-main)] text-white px-4 py-2 rounded-lg 
+               hover:bg-[var(--secondary-light)] transition-colors;
+    }
+
+    .card {
+        @apply bg-[var(--background-paper)] p-6 rounded-xl shadow-lg;
+    }
+
+    .input-field {
+        @apply bg-[var(--background-paper)] border border-[var(--divider)] 
+               rounded-lg px-4 py-2 focus:ring-2 focus:ring-[var(--primary-main)] 
+               focus:border-transparent outline-none;
+    }
 }
