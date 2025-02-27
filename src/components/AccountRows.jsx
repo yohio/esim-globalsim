@@ -7,34 +7,34 @@ const AccountRows = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        const fetchAccountData = async () => {
-            const query = `
-                {
-                    account {
-                        nodes {
-                            _ID
-                            account_balance
-                            account_name
-                            account_owner
-                        }
-                    }
-                }
-            `;
-            try {
-                const response = await fetchGraphQL(query);
-                console.log("Response: ", response);
-                setAccountRows(response.data.account.nodes);
-            } catch (err) {
-                console.log("Error: ", err);
-                setError('Error fetching menu data');
-            } finally {
-                setLoading(false);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchAccountData = async () => {
+    //         const query = `
+    //             {
+    //                 account {
+    //                     nodes {
+    //                         _ID
+    //                         account_balance
+    //                         account_name
+    //                         account_owner
+    //                     }
+    //                 }
+    //             }
+    //         `;
+    //         try {
+    //             const response = await fetchGraphQL(query);
+    //             console.log("Response: ", response);
+    //             setAccountRows(response.data.account.nodes);
+    //         } catch (err) {
+    //             console.log("Error: ", err);
+    //             setError('Error fetching menu data');
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
 
-        fetchAccountData();
-    }, []);
+    //     fetchAccountData();
+    // }, []);
 
     if (loading) return <div>Loading Accounts...</div>;
     if (error) return <div>{error}</div>;

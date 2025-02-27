@@ -10,6 +10,9 @@ export const performSearch = async (searchType, searchQuery) => {
             case 'account':
                 query = queries.account;
                 break;
+            case 'esim':
+                query = queries.eSim;
+                break
             case 'account_name':
                 query = queries.searchAccount;
                 variables = { name: searchQuery };

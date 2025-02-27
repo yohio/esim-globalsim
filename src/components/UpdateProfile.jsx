@@ -51,6 +51,7 @@ const UpdateProfile = ({ token, userId }) => {
         setIsSubmitting(true);
         
         try {
+            console.log("formData: ", formData);
             const response = await wpApi.put(`/wp/v2/users/${userId}`, formData, {
                 headers: {
                     'Content-Type': 'application/json',

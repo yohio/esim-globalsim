@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const accountSlice = createSlice({
-    name: 'account',
+    name: 'accounts',
     initialState: {
         data: {
             nodes: []
@@ -13,17 +13,14 @@ const accountSlice = createSlice({
         setAccountData: (state, action) => {
             state.data = action.payload;
         },
-        clearAccountData: (state) => {
-            state.data = initialState;
-        },
-        setLoading: (state, action) => {
+        setLoadingAccount: (state, action) => {
             state.loading = action.payload;
         },
-        setError: (state, action) => {
+        setErrorAccount: (state, action) => {
             state.error = action.payload;
         }
     }
 });
 
-export const { setAccountData, clearAccountData, setLoading, setError } = accountSlice.actions;
+export const { setAccountData, setLoadingAccount, setErrorAccount } = accountSlice.actions;
 export default accountSlice.reducer;

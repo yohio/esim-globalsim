@@ -7,7 +7,7 @@ import logoImg from '../assets/images/Logo.png';
 const MenuSidebar = () => {
     const dispatch = useDispatch();
     const activeItem = useSelector((state) => state.activeMenu.activeItem);
-    const [menuItems] = useState(['Reseller', 'Accounts', 'Subscriber', 'Packages']);
+    const [menuItems] = useState(['Reseller', 'Accounts', 'Subscriber']);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 

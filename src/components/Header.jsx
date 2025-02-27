@@ -31,6 +31,7 @@ const Header = ({ accounts }) => {
             if (!query && searchType !== 'account') return;
             
             const fetchSearchData = async () => {
+                console.log("####### searchType: ", searchType);
                 try {
                     const data = await performSearch(searchType, query);
                     

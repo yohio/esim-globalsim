@@ -4,36 +4,77 @@ import { wpApi } from '../utils/wpApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../redux/slices/userSlice';
 import { performSearch } from '../utils/searchUtils';
-import { setAccountData } from '../redux/slices/accountSlice';
+import { setAccountData, setLoadingAccount } from '../redux/slices/accountSlice';
+import { setESimData } from '../redux/slices/eSimSlice';
 
 const MainPage = ({ user }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const dispatch = useDispatch();
     const { token, id } = useSelector((state) => state.user);
     const userData = useSelector((state) => state.user);
-    // Update selector to properly access account data
-    const accountData = useSelector((state) => {
-        console.log('Full Redux State:', state);
-        console.log('Account State:', state.accounts);
-        return state.accounts?.data || { nodes: [] };
-    });
     const activeItem = useSelector((state) => state.activeMenu.activeItem);
-    if (activeItem === 'Accounts') {
-        const searchResults = performSearch('account', '').then((data) => {
-            dispatch(setAccountData(data.account));
-        });   
-    };
     
-    // const eSimData = useSelector((state) => state.eSim.data);
-accountData
+    // Add eSim data selector
+    const eSimData = useSelector((state) => state.eSim?.data || { nodes: [] });
+    const accountData = useSelector((state) => state.accounts?.data || { nodes: [] });
+    const accountLoading = useSelector((state) => state.accounts?.loading || false);
+    
+    useEffect(() => {
+        let mounted = true;
+
+        const fetchAccounts = async () => {
+            if ((activeItem !== 'Accounts' && activeItem !== 'Subscriber') || accountLoading
+            ) return;
+
+            try {
+                dispatch(setLoadingAccount(true));
+                console.log("fetching data");
+                switch (activeItem) {
+                    case 'Accounts':
+                        console.log("fetching accounts");
+                        const accountResponse = await performSearch('account', '');
+                        if (mounted) {
+                            dispatch(setAccountData(accountResponse.account));
+                        }
+                        break;
+                    case 'Subscriber':
+                        console.log("fetching eSim");
+                        const eSimResponse = await performSearch('esim', '');
+                        if (mounted) {
+                            dispatch(setESimData(eSimResponse.eSim));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                if (mounted) {
+                    setErrorMessage(`Failed to fetch ${activeItem.toLowerCase()} data`);
+                }
+            } finally {
+                if (mounted) {
+                    dispatch(setLoadingAccount(false));
+                }
+            }
+        };
+
+        fetchAccounts();
+
+        return () => {
+            mounted = false;
+        };
+    }, [activeItem, dispatch]);
+
     useEffect(() => {
 
         // Initial user data from props
-        if (user) {
+        if (user && user !== userData) {
             dispatch(setUser(user));
         }
 
         const fetchUserData = async () => {
+            
             try {
                 const response = await wpApi.get(`/wp/v2/users/${user.id}`, {
                     headers: {
@@ -58,15 +99,20 @@ accountData
         fetchUserData();
     }, [user, dispatch]);
 
-    const renderTableHeaders = () => {
-        if (!accountData?.nodes?.[0]) return null;
+    const renderTableHeaders = (data) => {
+        // Return null if data is empty or undefined
+        if (!data || !Array.isArray(data) || data.length === 0) return null;
 
-        const columns = Object.keys(accountData.nodes[0]);
+        // Get columns from the first item
+        const columns = Object.keys(data[0]);
         
         return (
             <div className="bg-gray-50 flex border-b">
                 {columns.map((column) => (
-                    <div key={column} className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider flex-1">
+                    <div 
+                        key={column} 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider flex-1"
+                    >
                         {column.replace(/_/g, ' ')}
                     </div>
                 ))}
@@ -74,15 +120,19 @@ accountData
         );
     };
 
-    const renderTableRows = () => {
-        if (!accountData?.nodes) return null;
+    const renderTableRows = (data) => {
+        // Return null if data is empty or undefined
+        if (!data || !Array.isArray(data) || data.length === 0) return null;
 
         return (
             <div className="bg-white divide-y divide-gray-200">
-                {accountData.nodes.map((node, index) => (
+                {data.map((node, index) => (
                     <div key={index} className="flex hover:bg-gray-50">
                         {Object.values(node).map((value, cellIndex) => (
-                            <div key={cellIndex} className="px-6 py-4 whitespace-nowrap flex-1">
+                            <div 
+                                key={cellIndex} 
+                                className="px-6 py-4 whitespace-nowrap flex-1"
+                            >
                                 {typeof value === 'object' ? JSON.stringify(value) : value}
                             </div>
                         ))}
@@ -91,6 +141,13 @@ accountData
             </div>
         );
     };
+
+    // Update the visualData assignment to handle nested data structure
+    const visualData = activeItem === 'Accounts' 
+        ? accountData?.nodes || []
+        : activeItem === 'Subscriber'
+            ? eSimData?.nodes || []
+            : [];
 
     if (!token || !id) {
         return <div>Failed to load profile</div>;
@@ -101,14 +158,14 @@ accountData
 			<div className="container mx-auto p-4">
             <div className="overflow-x-auto shadow-md sm:rounded-lg">
                 <div className="w-full">
-                    {accountData ? (
+                    {visualData.length > 0 ? (
                         <div>
-                            {renderTableHeaders()}
-                            {renderTableRows()}
+                            {renderTableHeaders(visualData)}
+                            {renderTableRows(visualData)}
                         </div>
                     ) : (
                         <div className="p-4 text-center text-gray-500">
-                            No search results to display
+                            No data to display
                         </div>
                     )}
                 </div>
