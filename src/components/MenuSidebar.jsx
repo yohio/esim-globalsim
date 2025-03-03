@@ -1,18 +1,26 @@
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveMenuItem } from '../redux/slices/activeMenuSlice';
 import logoImg from '../assets/images/Logo.png';
+import userImg from '../assets/images/user-circle.png';
 
 const MenuSidebar = () => {
+    const router = useRouter();
     const dispatch = useDispatch();
     const activeItem = useSelector((state) => state.activeMenu.activeItem);
+    const userData = useSelector((state) => state.user);
     const [menuItems] = useState(['Reseller', 'Accounts', 'Subscriber']);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     const handleMenuClick = (item) => {
         dispatch(setActiveMenuItem(item));
+    };
+
+    const handleProfileClick = () => {
+        router.push('/profile');
     };
 
     return (
@@ -25,19 +33,41 @@ const MenuSidebar = () => {
                     />
                 <p>Version: {process.env.NEXT_PUBLIC_CURRENT_VERSION}</p>
             </div>
-            <ul>
-                {menuItems.map((item) => (
-                    <li
-                        key={item}
-                        className={`cursor-pointer p-2 hover:bg-white/10 text-white ${
-                            activeItem === item ? 'bg-white/20 font-bold' : ''
-                        }`}
-                        onClick={() => handleMenuClick(item)}
+            <div className='menu-items-holder'>
+                <ul>
+                    {menuItems.map((item) => (
+                        <li
+                            key={item}
+                            className={`cursor-pointer p-2 hover:bg-white/10 text-white ${
+                                activeItem === item ? 'bg-white/20 font-bold' : ''
+                            }`}
+                            onClick={() => handleMenuClick(item)}
+                        >
+                            {item}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            {userData && (
+                <div className='profile-wrapper mt-auto p-4'>
+                    <div className='text-white user-name flex items-center justify-start gap-2'>
+                        <Image
+                            src={userImg}
+                            width={32}
+                            height={32}
+                            className="rounded-full"
+                            alt={`${process.env.NEXT_PUBLIC_SITE_NAME} user icon`}
+                        />
+                        <span className='text-white'>{userData?.name}</span>
+                    </div>
+                    <button
+                        onClick={handleProfileClick}
+                        className="mt-2 w-full px-4 py-2 text-sm text-white hover:bg-white/10 rounded-lg transition-colors"
                     >
-                        {item}
-                    </li>
-                ))}
-            </ul>
+                        View Profile
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
