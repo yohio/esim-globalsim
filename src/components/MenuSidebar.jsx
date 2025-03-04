@@ -24,16 +24,16 @@ const MenuSidebar = () => {
     };
 
     return (
-        <div className="menu-sidebar rounded-xl p-4 bg-gradient-to-b from-[#1135e7] to-[#0022cd] min-h-screen">
-            <div className='logo'>
+        <div className="menu-sidebar rounded-xl  bg-gradient-to-b from-[#1135e7] to-[#0022cd] min-h-screen flex flex-col">
+            <div className='logo flex flex-col py-8 px-4 justify-center align-middle'>
                 <Image
                     src={logoImg}
                     className="h-full object-cover px-4"
                     alt={`${process.env.NEXT_PUBLIC_SITE_NAME} logo`}
                     />
-                <p>Version: {process.env.NEXT_PUBLIC_CURRENT_VERSION}</p>
+                <p className='text-center'>Version: {process.env.NEXT_PUBLIC_CURRENT_VERSION}</p>
             </div>
-            <div className='menu-items-holder'>
+            <div className='menu-items-holder flex-grow px-4'>
                 <ul>
                     {menuItems.map((item) => (
                         <li
@@ -49,8 +49,8 @@ const MenuSidebar = () => {
                 </ul>
             </div>
             {userData && (
-                <div className='profile-wrapper mt-auto p-4'>
-                    <div className='text-white user-name flex items-center justify-start gap-2'>
+                <div className='profile-wrapper mt-auto p-4 border-t-white border-t-[1px] py-4 px-4 flex flex-col justify-center align-middle '>
+                    <div className='text-white user-name flex items-center justify-center ml-[-32px] gap-2 text-center'>
                         <Image
                             src={userImg}
                             width={32}
