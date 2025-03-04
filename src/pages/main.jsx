@@ -157,7 +157,7 @@ const MainPage = ({ user }) => {
         <section className="border-red-500 min-h-screen flex w-full lg:w-100">
 			<div className="container mx-auto p-4">
             <div className="overflow-x-auto shadow-md sm:rounded-lg">
-                <div className="w-full">
+                <div className="w-full text-black">
                     {visualData.length > 0 ? (
                         <div>
                             {renderTableHeaders(visualData)}
