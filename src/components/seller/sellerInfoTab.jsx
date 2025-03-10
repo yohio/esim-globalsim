@@ -1,12 +1,6 @@
 import { useState } from "react";
 
 const InfoTab = ({ data }) => {
-    // Ensure `data` is a valid object before trying to map it
-    if (!data || typeof data !== 'object') {
-        console.error('InfoTab expected an object but received:', data);
-        return <p>No data available</p>;
-    }
-    
     const demoData = 
         {
             name: 'Mike miller',
@@ -14,6 +8,12 @@ const InfoTab = ({ data }) => {
             status: ['active','processing', 'panding'],
         };
     const [selectedStatus, setSelectedStatus ] = useState(demoData.status[0]);    
+
+    // Ensure `data` is a valid object before trying to map it
+    if (!data || typeof data !== 'object') {
+        console.error('InfoTab expected an object but received:', data);
+        return <p>No data available</p>;
+    }
     const handleStatusChange = (event) => {
         setSelectedStatus(event.target.value);
     };
