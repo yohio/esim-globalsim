@@ -35,5 +35,5 @@ export const RowGenerate = (data) => {
                     </Link>
                 ))}
         </div>
-    );
+    ); 
 }
