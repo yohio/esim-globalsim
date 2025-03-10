@@ -18,9 +18,9 @@ const LoginForm = ({ setErrorMessage }) => {
             const result = await authenticate(username, password);
 
             console.log ("Result: ", result);
-            if (result.data.success) {
-                router.push('/main'); // Redirect to the profile after logging in
-            } else {
+            if (result.data.success) { 
+                router.push('/main'); // Redirect to main page
+            }else {
                 setErrorMessage('Authentication failed. Please try again.');
                 setTimeout(() => setErrorMessage(''), 3000);
             }

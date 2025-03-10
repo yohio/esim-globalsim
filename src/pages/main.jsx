@@ -6,6 +6,7 @@ import { setUser } from '../redux/slices/userSlice';
 import { performSearch } from '../utils/searchUtils';
 import { setAccountData, setLoadingAccount } from '../redux/slices/accountSlice';
 import { setESimData } from '../redux/slices/eSimSlice';
+import Link from 'next/link';
 
 const MainPage = ({ user }) => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -13,12 +14,49 @@ const MainPage = ({ user }) => {
     const { token, id } = useSelector((state) => state.user);
     const userData = useSelector((state) => state.user);
     const activeItem = useSelector((state) => state.activeMenu.activeItem);
-    
+    const [resellersIds, setResellersId] = useState([]);
     // Add eSim data selector
     const eSimData = useSelector((state) => state.eSim?.data || { nodes: [] });
     const accountData = useSelector((state) => state.accounts?.data || { nodes: [] });
     const accountLoading = useSelector((state) => state.accounts?.loading || false);
     
+    useEffect(()=>{
+        const getResellers = async () =>{
+            try {
+                const response = await wpApi.get(`/custom/v1/resellers`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token}`,
+                    },
+                });
+                const resellerIds = response.data;
+
+                const resellerDetailsPromises = resellerIds.map(async (reseller) => {
+                    const detailsResponse = await wpApi.get(`/wp/v2/users/${reseller.id}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${user.token}`,
+                        },
+                    });
+                    console.log('detailsResponse', detailsResponse);
+                    const dataArray = {
+                        dataType: 'reseller',
+                        id: reseller.id,
+                        ...detailsResponse.data.meta,
+
+                    };
+                    return dataArray;
+                });       
+                const resellerDetails = await Promise.all(resellerDetailsPromises);
+         
+                setResellersId(resellerDetails);
+                
+            } catch (error) {   
+                console.log('Error check', error);
+            }
+        }
+        getResellers();
+    },[]);
     useEffect(() => {
         let mounted = true;
 
@@ -123,10 +161,33 @@ const MainPage = ({ user }) => {
     const renderTableRows = (data) => {
         // Return null if data is empty or undefined
         if (!data || !Array.isArray(data) || data.length === 0) return null;
-
+        
+        const resellerFilterData = data.filter( (single) => single.dataType === 'reseller');
+        
+        if(resellerFilterData.length > 0){
+            return(
+                <div className="bg-white divide-y divide-gray-200">
+                {data.map((node, index) => (
+                    <Link key={index} href={`/seller/${node.id}`} passHref>
+                    <div className="flex hover:bg-gray-50">
+                        {Object.values(node).map((value, cellIndex) => (  
+                            <div 
+                                key={cellIndex} 
+                                className="px-6 py-4 whitespace-nowrap flex-1"
+                            >
+                                {typeof value === 'object' ? JSON.stringify(value) : value}
+                            </div>
+                        ))}
+                    </div>
+                    </Link>
+                ))}
+            </div>
+            );
+        }
         return (
             <div className="bg-white divide-y divide-gray-200">
                 {data.map((node, index) => (
+                    
                     <div key={index} className="flex hover:bg-gray-50">
                         {Object.values(node).map((value, cellIndex) => (
                             <div 
@@ -146,13 +207,13 @@ const MainPage = ({ user }) => {
     const visualData = activeItem === 'Accounts' 
         ? accountData?.nodes || []
         : activeItem === 'Subscriber'
-            ? eSimData?.nodes || []
-            : [];
+            ? eSimData?.nodes || activeItem === 'Resellers'
+            : resellersIds;
 
     if (!token || !id) {
         return <div>Failed to load profile</div>;
     };
-
+ 
     return (
         <section className="border-red-500 min-h-screen flex w-full lg:w-100">
 			<div className="container mx-auto p-4">
